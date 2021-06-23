@@ -65,7 +65,8 @@ public class MyWizardTelegramBot extends TelegramWebhookBot {
 
     @SneakyThrows
     public void sendPhoto(long chatId, String imageCaption, String imagePath) {
-        File image = ResourceUtils.getFile(imagePath);
+        File image = ResourceUtils.getFile("classpath:" + imagePath);
+//        File image = ResourceUtils.getFile(imagePath);
         SendPhoto sendPhoto = new SendPhoto().setPhoto(image);
         sendPhoto.setChatId(chatId);
         sendPhoto.setCaption(imageCaption);

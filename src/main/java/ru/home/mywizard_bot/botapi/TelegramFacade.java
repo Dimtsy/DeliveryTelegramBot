@@ -8,6 +8,7 @@ import org.springframework.util.ResourceUtils;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -74,7 +75,8 @@ public class TelegramFacade {
         switch (inputMsg) {
             case "/start":
                 botState = BotState.ASK_DESTINY;
-                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello"), "/app/src/main/resources/static/images/wizard_logo.jpg");
+                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello"), "static/images/wizard_logo.jpg");
+//                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello"), "/app/src/main/resources/static/images/wizard_logo.jpg");
                 break;
             case "Получить предсказание":
                 botState = BotState.FILLING_PROFILE;
@@ -117,6 +119,18 @@ public class TelegramFacade {
 
         //From Destiny choose buttons
         if (buttonQuery.getData().equals("buttonYes")) {
+            //            Меняем сообщение и клавиатуру при нажатии, а не выкидываем следующее
+//            EditMessageText editMessageText = new EditMessageText();
+//            editMessageText.setMessageId(messId);
+//            editMessageText.setChatId(chatId);
+//            editMessageText.setText("Как тебя зовут ?");
+//            editMessageText.setInlineMessageId(inlineMessId);
+//            editMessageText.setReplyMarkup(getInlineMessageButtons2());
+//Меняем клавиатуру Inlain
+//            EditMessageReplyMarkup callBackAnswer1 = new EditMessageReplyMarkup();
+//            callBackAnswer1.setReplyMarkup(inlineMessId);
+//            callBackAnswer1(chatId,messId);
+
             callBackAnswer = new SendMessage(chatId, "Как тебя зовут ?");
             userDataCache.setUsersCurrentBotState(userId, BotState.ASK_AGE);
             //            Убирает часики на кнопке
@@ -167,8 +181,8 @@ public class TelegramFacade {
     @SneakyThrows
     public File getUsersProfile(int userId) {
         UserProfileData userProfileData = userDataCache.getUserProfileData(userId);
-        File profileFile = ResourceUtils.getFile("/app/src/main/resources/static/docs/users_profile.txt");
-
+        File profileFile = ResourceUtils.getFile("classpath:static/docs/users_profile.txt");
+//        File profileFile = ResourceUtils.getFile("/app/src/main/resources/static/docs/users_profile.txt");
         try (FileWriter fw = new FileWriter(profileFile.getAbsoluteFile());
              BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write(userProfileData.toString());
