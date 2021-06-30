@@ -1,7 +1,9 @@
 package ru.home.mywizard_bot.botapi.handlers.menu;
 
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.home.mywizard_bot.botapi.BotState;
 import ru.home.mywizard_bot.botapi.InputMessageHandler;
@@ -21,7 +23,10 @@ public class ShowProfileHandler implements InputMessageHandler {
         this.userDataCache = userDataCache;
         this.profileDataService = profileDataService;
     }
-
+    @Override
+    public BotApiMethod<?> processCallbackQueryHandler(CallbackQuery buttonQuery) {
+        return null;
+    }
     @Override
     public SendMessage handle(Message message) {
         SendMessage userReply;

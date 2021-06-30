@@ -12,11 +12,11 @@ import java.io.Serializable;
  * Данные анкеты пользователя
  */
 
-@Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@Document(collection = "userProfileData")
+@Data//вместо геттеры сеттеров тустринг хэшкод и конструкторы
+@FieldDefaults(level = AccessLevel.PRIVATE)//Вместо того что-бы писать что все поля приватные
+@Document(collection = "userProfileData")//"userProfileData" название базы данных в Монго ДБ
 public class UserProfileData implements Serializable {
-    @Id
+    @Id//  поле id будет для базы данных айдишником
     String id;
     String name;
     String gender;

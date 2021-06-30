@@ -17,10 +17,12 @@ import ru.home.mywizard_bot.cache.UserDataCache;
 import ru.home.mywizard_bot.model.UserProfileData;
 import ru.home.mywizard_bot.service.MainMenuService;
 import ru.home.mywizard_bot.service.ReplyMessagesService;
+import ru.home.mywizard_bot.utils.Emojis;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Sergei Viacheslaev
@@ -74,8 +76,11 @@ public class TelegramFacade {
 
         switch (inputMsg) {
             case "/start":
-                botState = BotState.ASK_DESTINY;
-                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello"), "static/images/wizard_logo.jpg");
+                botState = BotState.START_MENU;
+//                userDataCache.setUsersCurrentBotState(userId, botState);
+//                return mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN));
+
+//                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN), "static/images/wizard_logo.jpg");
 //                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello"), "/app/src/main/resources/static/images/wizard_logo.jpg");
                 break;
             case "Получить предсказание":
@@ -96,6 +101,7 @@ public class TelegramFacade {
                 break;
         }
 
+
         userDataCache.setUsersCurrentBotState(userId, botState);
 
         replyMessage = botStateContext.processInputMessage(botState, message);
@@ -105,66 +111,70 @@ public class TelegramFacade {
 
 
     private BotApiMethod<?> processCallbackQuery(CallbackQuery buttonQuery) {
+        BotState botState;
         final long chatId = buttonQuery.getMessage().getChatId();
         final int userId = buttonQuery.getFrom().getId();
 
         BotApiMethod<?> callBackAnswer = null;
+        botState = userDataCache.getUsersCurrentBotState(userId);
+        userDataCache.setUsersCurrentBotState(userId, botState);
 
-        if (buttonQuery.getData().equals("-")){
-            callBackAnswer = mainMenuService.getMainMenuMessage(chatId, "Воспользуйтесь главным меню");
-            //            Убирает часики на кнопке
-            myWizardBot.sendRemoveClock(buttonQuery);
-        }
-
-
-        //From Destiny choose buttons
-        if (buttonQuery.getData().equals("buttonYes")) {
-            //            Меняем сообщение и клавиатуру при нажатии, а не выкидываем следующее
-//            EditMessageText editMessageText = new EditMessageText();
-//            editMessageText.setMessageId(messId);
-//            editMessageText.setChatId(chatId);
-//            editMessageText.setText("Как тебя зовут ?");
-//            editMessageText.setInlineMessageId(inlineMessId);
-//            editMessageText.setReplyMarkup(getInlineMessageButtons2());
-//Меняем клавиатуру Inlain
-//            EditMessageReplyMarkup callBackAnswer1 = new EditMessageReplyMarkup();
-//            callBackAnswer1.setReplyMarkup(inlineMessId);
-//            callBackAnswer1(chatId,messId);
-
-            callBackAnswer = new SendMessage(chatId, "Как тебя зовут ?");
-            userDataCache.setUsersCurrentBotState(userId, BotState.ASK_AGE);
-            //            Убирает часики на кнопке
-            myWizardBot.sendRemoveClock(buttonQuery);
-        } else if (buttonQuery.getData().equals("buttonNo")) {
-            callBackAnswer = sendAnswerCallbackQuery("Возвращайся, когда будешь готов", false, buttonQuery);
-        } else if (buttonQuery.getData().equals("buttonIwillThink")) {
-            callBackAnswer = sendAnswerCallbackQuery("Данная кнопка не поддерживается", true, buttonQuery);
-        }
-
-        //From Gender choose buttons
-        else if (buttonQuery.getData().equals("buttonMan")) {
-            UserProfileData userProfileData = userDataCache.getUserProfileData(userId);
-            userProfileData.setGender("М");
-            userDataCache.saveUserProfileData(userId, userProfileData);
-            userDataCache.setUsersCurrentBotState(userId, BotState.ASK_COLOR);
-            callBackAnswer = new SendMessage(chatId, "Твоя любимая цифра");
-            //            Убирает часики на кнопке
-            myWizardBot.sendRemoveClock(buttonQuery);
-        } else if (buttonQuery.getData().equals("buttonWoman")) {
-            UserProfileData userProfileData = userDataCache.getUserProfileData(userId);
-            userProfileData.setGender("Ж");
-            userDataCache.saveUserProfileData(userId, userProfileData);
-            userDataCache.setUsersCurrentBotState(userId, BotState.ASK_COLOR);
-            callBackAnswer = new SendMessage(chatId, "Твоя любимая цифра");
-            //            Убирает часики на кнопке
-            myWizardBot.sendRemoveClock(buttonQuery);
-
-        } else {
-            userDataCache.setUsersCurrentBotState(userId, BotState.SHOW_MAIN_MENU);
-        }
-
-
+        callBackAnswer = botStateContext.processInputCallbackQuery(botState, buttonQuery);
         return callBackAnswer;
+
+//        if (buttonQuery.getData().equals("-")){
+//            callBackAnswer = mainMenuService.getMainMenuMessage(chatId, "Воспользуйтесь главным меню");
+//            //            Убирает часики на кнопке
+//            myWizardBot.sendRemoveClock(buttonQuery);
+//        }
+//
+//
+//        //From Destiny choose buttons
+//        if (buttonQuery.getData().equals("buttonYes")) {
+//            //            Меняем сообщение и клавиатуру при нажатии, а не выкидываем следующее
+////            EditMessageText editMessageText = new EditMessageText();
+////            editMessageText.setMessageId(messId);
+////            editMessageText.setChatId(chatId);
+////            editMessageText.setText("Как тебя зовут ?");
+////            editMessageText.setInlineMessageId(inlineMessId);
+////            editMessageText.setReplyMarkup(getInlineMessageButtons2());
+////Меняем клавиатуру Inlain
+////            EditMessageReplyMarkup callBackAnswer1 = new EditMessageReplyMarkup();
+////            callBackAnswer1.setReplyMarkup(inlineMessId);
+////            callBackAnswer1(chatId,messId);
+//
+//            callBackAnswer = new SendMessage(chatId, "Как тебя зовут ?");
+//            userDataCache.setUsersCurrentBotState(userId, BotState.ASK_AGE);
+//            //            Убирает часики на кнопке
+//            myWizardBot.sendRemoveClock(buttonQuery);
+//        } else if (buttonQuery.getData().equals("buttonNo")) {
+//            callBackAnswer = sendAnswerCallbackQuery("Возвращайся, когда будешь готов", false, buttonQuery);
+//        } else if (buttonQuery.getData().equals("buttonIwillThink")) {
+//            callBackAnswer = sendAnswerCallbackQuery("Данная кнопка не поддерживается", true, buttonQuery);
+//        }
+//
+//        //From Gender choose buttons
+//        else if (buttonQuery.getData().equals("buttonMan")) {
+//            UserProfileData userProfileData = userDataCache.getUserProfileData(userId);
+//            userProfileData.setGender("М");
+//            userDataCache.saveUserProfileData(userId, userProfileData);
+//            userDataCache.setUsersCurrentBotState(userId, BotState.ASK_COLOR);
+//            callBackAnswer = new SendMessage(chatId, "Твоя любимая цифра");
+//            //            Убирает часики на кнопке
+//            myWizardBot.sendRemoveClock(buttonQuery);
+//        } else if (buttonQuery.getData().equals("buttonWoman")) {
+//            UserProfileData userProfileData = userDataCache.getUserProfileData(userId);
+//            userProfileData.setGender("Ж");
+//            userDataCache.saveUserProfileData(userId, userProfileData);
+//            userDataCache.setUsersCurrentBotState(userId, BotState.ASK_COLOR);
+//            callBackAnswer = new SendMessage(chatId, "Твоя любимая цифра");
+//            //            Убирает часики на кнопке
+//            myWizardBot.sendRemoveClock(buttonQuery);
+//
+//        } else {
+//            userDataCache.setUsersCurrentBotState(userId, BotState.SHOW_MAIN_MENU);
+//        }
+
 
 
     }

@@ -8,9 +8,11 @@ import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.home.mywizard_bot.botapi.TelegramFacade;
 
 import java.io.File;
@@ -87,6 +89,9 @@ public class MyWizardTelegramBot extends TelegramWebhookBot {
         answerCallbackQuery.setCallbackQueryId(buttonQuery.getId());
         execute(answerCallbackQuery);
     }
-
+    @SneakyThrows
+    public void sendMessageExecute(SendMessage sendMessage1) {
+        execute(sendMessage1);
+    }
 
 }
