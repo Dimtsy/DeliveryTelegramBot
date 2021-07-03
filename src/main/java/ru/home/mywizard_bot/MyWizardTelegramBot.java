@@ -90,8 +90,8 @@ public class MyWizardTelegramBot extends TelegramWebhookBot {
         execute(answerCallbackQuery);
     }
     @SneakyThrows
-    public void sendMessageExecute(SendMessage sendMessage1) {
-        execute(sendMessage1);
+    public void sendMessageExecute(SendMessage sendMessage) {
+        execute(sendMessage);
     }
 
 }

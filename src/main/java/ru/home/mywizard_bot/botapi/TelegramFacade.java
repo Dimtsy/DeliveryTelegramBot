@@ -83,18 +83,21 @@ public class TelegramFacade {
 //                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN), "static/images/wizard_logo.jpg");
 //                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello"), "/app/src/main/resources/static/images/wizard_logo.jpg");
                 break;
-            case "Получить предсказание":
-                botState = BotState.FILLING_PROFILE;
+            case "Пицца\uD83C\uDF55":
+                botState = BotState.PIZZA;
                 break;
-            case "Моя анкета":
-                botState = BotState.SHOW_USER_PROFILE;
+            case "Суши\uD83C\uDF63":
+                botState = BotState.SUSHI;
                 break;
-            case "Скачать анкету":
-                myWizardBot.sendDocument(chatId, "Ваша анкета", getUsersProfile(userId));
-                botState = BotState.SHOW_USER_PROFILE;
+            case "Корзина\uD83D\uDED2":
+//                myWizardBot.sendDocument(chatId, "Ваша анкета", getUsersProfile(userId));
+                botState = BotState.BASKET;
                 break;
-            case "Помощь":
-                botState = BotState.SHOW_HELP_MENU;
+            case "Оформить заказ\uD83D\uDE96":
+                botState = BotState.CHECKOUT;
+                break;
+            case "О нас\uD83C\uDFEE":
+                botState = BotState.ABOUT;
                 break;
             default:
                 botState = userDataCache.getUsersCurrentBotState(userId);

@@ -16,7 +16,9 @@ public enum Emojis {
     BASKET(EmojiParser.parseToUnicode(":shopping_trolley:")),
     CHECKOUT(EmojiParser.parseToUnicode(":oncoming_taxi:")),
     ABOUT(EmojiParser.parseToUnicode(":izakaya_lantern:")),
-    POINTDOWN(EmojiParser.parseToUnicode(":point_down:"));
+    POINTDOWN(EmojiParser.parseToUnicode(":point_down:")),
+    ARROWSCOUNT(EmojiParser.parseToUnicode(":arrows_counterclockwise:")),
+    X(EmojiParser.parseToUnicode(":x:"));
 
     private String emojiName;
 

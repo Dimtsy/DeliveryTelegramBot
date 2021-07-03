@@ -5,8 +5,11 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import ru.home.mywizard_bot.botapi.BotState;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Данные анкеты пользователя
@@ -18,20 +21,23 @@ import java.io.Serializable;
 public class UserProfileData implements Serializable {
     @Id//  поле id будет для базы данных айдишником
     String id;
-    String name;
-    String gender;
-    String color;
-    String movie;
-    String song;
-    int age;
-    int number;
+    Map<BotState, Integer> userBasket;
+//    String name;
+//    String gender;
+//    String color;
+//    String movie;
+//    String song;
+//    int age;
+//    int number;
     long chatId;
 
 
-    @Override
-    public String toString() {
-        return String.format("Имя: %s%nВозраст: %d%nПол: %s%nЛюбимая цифра: %d%n" +
-                        "Цвет: %s%nФильм: %s%nПесня: %s%n", getName(), getAge(), getGender(), getNumber(),
-                getColor(), getMovie(), getSong());
-    }
+//    @Override
+//    public String toString() {
+//        return String.format("Имя: %s%nВозраст: %d%nПол: %s%nЛюбимая цифра: %d%n" +
+//                        "Цвет: %s%nФильм: %s%nПесня: %s%n");
+////        , getName());
+////                getAge(), getGender(), getNumber(),
+////                getColor(), getMovie(), getSong());
+//    }
 }

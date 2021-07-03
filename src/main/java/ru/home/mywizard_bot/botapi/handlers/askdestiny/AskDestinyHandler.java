@@ -18,47 +18,47 @@ import ru.home.mywizard_bot.utils.Emojis;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Спрашивает пользователя- хочет ли он получить предсказание.
- */
-
-@Slf4j
-@Component
-public class AskDestinyHandler implements InputMessageHandler {
-    private ReplyMessagesService messagesService;
-    private MainMenuService mainMenuService;
-
-    public AskDestinyHandler(ReplyMessagesService messagesService,MainMenuService mainMenuService) {
-        this.messagesService = messagesService;
-        this.mainMenuService = mainMenuService;
-    }
-
-    @Override
-    public BotApiMethod<?> processCallbackQueryHandler(CallbackQuery buttonQuery) {
-        return null;
-    }
-
-    @Override
-    public SendMessage handle(Message message) {
-        return processUsersInput(message);
-    }
-
-    @Override
-    public BotState getHandlerName() {
-        return BotState.ASK_DESTINY;
-    }
-
-    private SendMessage processUsersInput(Message inputMsg) {
-        long chatId = inputMsg.getChatId();
-
-//        SendMessage replyToUser = messagesService.getReplyMessage(chatId, "reply.askDestiny", Emojis.POINTDOWN);
-
-//        replyToUser.setReplyMarkup(getInlineMessageButtons());
-
-
-        return mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN));
-    }
+//
+///**
+// * Спрашивает пользователя- хочет ли он получить предсказание.
+// */
+//
+//@Slf4j
+//@Component
+//public class AskDestinyHandler implements InputMessageHandler {
+//    private ReplyMessagesService messagesService;
+//    private MainMenuService mainMenuService;
+//
+//    public AskDestinyHandler(ReplyMessagesService messagesService,MainMenuService mainMenuService) {
+//        this.messagesService = messagesService;
+//        this.mainMenuService = mainMenuService;
+//    }
+//
+//    @Override
+//    public BotApiMethod<?> processCallbackQueryHandler(CallbackQuery buttonQuery) {
+//        return null;
+//    }
+//
+//    @Override
+//    public SendMessage handle(Message message) {
+//        return processUsersInput(message);
+//    }
+//
+//    @Override
+//    public BotState getHandlerName() {
+//        return BotState.ASK_DESTINY;
+//    }
+//
+//    private SendMessage processUsersInput(Message inputMsg) {
+//        long chatId = inputMsg.getChatId();
+//
+////        SendMessage replyToUser = messagesService.getReplyMessage(chatId, "reply.askDestiny", Emojis.POINTDOWN);
+//
+////        replyToUser.setReplyMarkup(getInlineMessageButtons());
+//
+//
+//        return mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN));
+//    }
 
 //    private InlineKeyboardMarkup getInlineMessageButtons() {
 //        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -93,7 +93,7 @@ public class AskDestinyHandler implements InputMessageHandler {
 //    }
 
 
-}
+//}
 
 
 

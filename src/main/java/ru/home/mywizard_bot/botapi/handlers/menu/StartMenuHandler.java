@@ -46,6 +46,7 @@ public class StartMenuHandler implements InputMessageHandler {
     public BotState getHandlerName() {
         return BotState.START_MENU;
     }
+
     private SendMessage processUsersInput(Message inputMsg) {
         String usersAnswer = inputMsg.getText();
         int userId = inputMsg.getFrom().getId();
@@ -60,18 +61,18 @@ public class StartMenuHandler implements InputMessageHandler {
             userDataCache.setUsersCurrentBotState(userId, BotState.START_MENU_ACT);
 
         }
-        if (usersAnswer.equals(messagesService.getReplyText("reply.pizza", Emojis.PIZZA))){
-            replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, "Выберите блюдо");
-            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
-        }
+//        if (usersAnswer.equals(messagesService.getReplyText("reply.pizza", Emojis.PIZZA))){
+//            replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, "Выберите блюдо");
+//            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
+//        }
         if (usersAnswer.equals(messagesService.getReplyText("reply.sushi", Emojis.SUSHI))){
             replyToUser = mainMenuService.getMainMenuMessageSushi(chatId, "Выберите блюдо");
             userDataCache.setUsersCurrentBotState(userId, BotState.SUSHI);
         }
-        if (usersAnswer.equals(messagesService.getReplyText("reply.basket", Emojis.BASKET))){
-            replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.pizza", Emojis.PIZZA));
-            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
-        }
+//        if (usersAnswer.equals(messagesService.getReplyText("reply.basket", Emojis.BASKET))){
+//            replyToUser = mainMenuService.getMainMenuMessageBasket(chatId);
+//            userDataCache.setUsersCurrentBotState(userId, BotState.BASKET_ACT);
+//        }
         if (usersAnswer.equals(messagesService.getReplyText("reply.checkout", Emojis.CHECKOUT))){
             replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.pizza", Emojis.PIZZA));
             userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);

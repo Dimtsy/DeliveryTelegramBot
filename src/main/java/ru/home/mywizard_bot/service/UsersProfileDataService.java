@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.home.mywizard_bot.model.UserProfileData;
 import ru.home.mywizard_bot.repository.UsersProfileMongoRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,8 +21,15 @@ public class UsersProfileDataService {
         this.profileMongoRepository = profileMongoRepository;
     }
 
-    public List<UserProfileData> getAllProfiles() {
-        return profileMongoRepository.findAll();
+    public List<UserProfileData> getAllProfiles(long chatId) {
+        List<UserProfileData> userProfileDataList = new ArrayList<>();
+
+        profileMongoRepository.findAll().forEach(t->{
+            if(t.getChatId()==chatId) {
+                userProfileDataList.add(t);
+            }
+        });
+        return userProfileDataList;
     }
 
     public void saveUserProfileData(UserProfileData userProfileData) {

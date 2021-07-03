@@ -1,26 +1,42 @@
 package ru.home.mywizard_bot.service;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import ru.home.mywizard_bot.MyWizardTelegramBot;
+import ru.home.mywizard_bot.botapi.BotState;
+
+import ru.home.mywizard_bot.model.UserProfileData;
 import ru.home.mywizard_bot.utils.Emojis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Управляет отображением главного меню в чате.
  *
  * @author Sergei Viacheslaev
  */
+
 @Service
 public class MainMenuService {
+//    private UserProfileData profileData;
+    static public String messageBasketReply;
     private ReplyMessagesService messagesService;
+    private UsersProfileDataService profileDataService;
+    private MyWizardTelegramBot myWizardBot;
 
-    public MainMenuService(ReplyMessagesService messagesService) {
+
+    public MainMenuService(@Lazy MyWizardTelegramBot myWizardBot, UsersProfileDataService profileDataService, ReplyMessagesService messagesService) {
         this.messagesService = messagesService;
+        this.profileDataService = profileDataService;
+        this.myWizardBot = myWizardBot;
+
     }
 
     public SendMessage getMainMenuMessage(final long chatId, final String textMessage) {
@@ -46,6 +62,13 @@ public class MainMenuService {
     }
     public SendMessage getMainMenuPizzaNumbers(final long chatId, final String textMessage) {
         final ReplyKeyboardMarkup replyKeyboardMarkup = getMainMenuKeyNumbers();
+        final SendMessage mainMenuMessage =
+                createMessageWithKeyboard(chatId, textMessage, replyKeyboardMarkup);
+
+        return mainMenuMessage;
+    }
+    public SendMessage getMainMenuMessageBasket(final long chatId, final String textMessage, Map<BotState,Integer> map) {
+        final ReplyKeyboardMarkup replyKeyboardMarkup = getMainMenuKeyboardBasket(chatId,map);
         final SendMessage mainMenuMessage =
                 createMessageWithKeyboard(chatId, textMessage, replyKeyboardMarkup);
 
@@ -185,4 +208,85 @@ public class MainMenuService {
         replyKeyboardMarkup.setKeyboard(keyboard);
         return replyKeyboardMarkup;
     }
+    private ReplyKeyboardMarkup getMainMenuKeyboardBasket(final long chatId,Map<BotState,Integer> map) {
+        AtomicInteger sum = new AtomicInteger();
+
+
+        final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+//-----------
+//        UserProfileData profileData = profileDataService.getUserProfileData(chatId);
+
+
+
+        KeyboardRow row1 = new KeyboardRow();
+        row1.add(new KeyboardButton(messagesService.getReplyText("reply.back", Emojis.BACK)));
+        row1.add(new KeyboardButton(messagesService.getReplyText("reply.arrowscount",
+                Emojis.ARROWSCOUNT)));
+        keyboard.add(row1);
+
+        messageBasketReply = String.format(" Корзина:%n%n");
+        map.forEach((t,v)->{
+            KeyboardRow row = new KeyboardRow();
+            row.add(new KeyboardButton(messagesService.getReplyText(getReplyTextBasket(t), Emojis.X)));
+            keyboard.add(row);
+            messageBasketReply = messageBasketReply.concat(String.format("%s%n %s X %s = %s%n",
+                    messagesService.getReplyText(getReplyTextBasket(t),""),v,getReplyPriceBasket(t),
+                    getReplyPriceBasket(t)*v));
+            sum.set(sum.get() + getReplyPriceBasket(t) * v);
+        });
+        messageBasketReply = messageBasketReply.concat(String.format("%n Итого: %s р.",sum));
+
+//        SendMessage sendMessage = new SendMessage();
+//        sendMessage.setChatId(chatId);
+//        sendMessage.setText(String.format(messagesService.getReplyText("reply.basketMemo",
+//                Emojis.X,Emojis.ARROWSCOUNT)));
+//        myWizardBot.sendMessageExecute(sendMessage);
+
+
+        KeyboardRow row2 = new KeyboardRow();
+        row2.add(new KeyboardButton((messagesService.getReplyText("reply.checkout",
+                Emojis.CHECKOUT))));
+        keyboard.add(row2);
+
+        replyKeyboardMarkup.setKeyboard(keyboard);
+        return replyKeyboardMarkup;
+    }
+    private String getReplyTextBasket(BotState botState){
+        String replyText= null;
+        switch (botState) {
+            case PIZZA_CHEESY:
+                replyText = "reply.pizzaCheesy";
+             break;
+            case PIZZA_CHEESY2:
+                replyText = "reply.pizzaCheesy2";
+                break;
+            case PIZZA_CHEESY3:
+                replyText = "reply.pizzaCheesy3";
+                break;
+
+        }
+        return replyText;
+    }
+    private int getReplyPriceBasket(BotState botState){
+        int replyPrice= 0;
+        switch (botState) {
+            case PIZZA_CHEESY:
+                replyPrice = 8;
+                break;
+            case PIZZA_CHEESY2:
+                replyPrice = 13;
+                break;
+            case PIZZA_CHEESY3:
+                replyPrice = 17;
+                break;
+
+        }
+        return replyPrice;
+    }
+
 }

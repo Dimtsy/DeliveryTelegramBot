@@ -25,6 +25,8 @@ import ru.home.mywizard_bot.utils.Emojis;
 import javax.swing.text.html.HTML;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Component
 public class PizzaMenuHandler implements InputMessageHandler {
@@ -70,6 +72,8 @@ public class PizzaMenuHandler implements InputMessageHandler {
         BotState botState = userDataCache.getUsersCurrentBotState(userId);
 
         BotApiMethod<?> callBackAnswer = null;
+
+
 
         if (botState.equals(BotState.PIZZA_CHEESY)){
             if (buttonQuery.getData().equals("buttonBack")){
@@ -125,9 +129,10 @@ public class PizzaMenuHandler implements InputMessageHandler {
         int userId = inputMsg.getFrom().getId();
         long chatId = inputMsg.getChatId();
 
-        UserProfileData profileData = userDataCache.getUserProfileData(userId);
-        BotState botState = userDataCache.getUsersCurrentBotState(userId);
 
+//        UserProfileData profileData = userDataCache.getUserProfileData(userId);
+        BotState botState = userDataCache.getUsersCurrentBotState(userId);
+//        Map<BotState, Integer> userBasket;
         SendMessage replyToUser = mainMenuService.getMainMenuPizzaNumbers(chatId, "Выберите или введите количество:");
 
         if (botState.equals(BotState.PIZZA)){
@@ -135,12 +140,25 @@ public class PizzaMenuHandler implements InputMessageHandler {
         }
 
         if (usersAnswer.matches(regex)){
-            if (botState.equals(BotState.PIZZA_CHEESY))
-            replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?"));
-            if (botState.equals(BotState.PIZZA_CHEESY2))
-                replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?"));
-            if (botState.equals(BotState.PIZZA_CHEESY3))
-                replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?"));
+
+            if (botState.equals(BotState.PIZZA_CHEESY)) {
+                System.out.println("PIZZA_CHEESY");
+                myWizardBot.sendMessageExecute(mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?")));
+//                replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?"));
+                addBasket(BotState.PIZZA_CHEESY,inputMsg);
+            }
+
+            if (botState.equals(BotState.PIZZA_CHEESY2)) {
+                System.out.println("PIZZA_CHEESY2");
+                myWizardBot.sendMessageExecute(mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?")));
+                addBasket(BotState.PIZZA_CHEESY2, inputMsg);
+            }
+            if (botState.equals(BotState.PIZZA_CHEESY3)) {
+                System.out.println("PIZZA_CHEESY3");
+                myWizardBot.sendMessageExecute(mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?")));
+                addBasket(BotState.PIZZA_CHEESY3, inputMsg);
+            }
+            replyToUser =null;
         }
         if (usersAnswer.equals("Пицца «Сырная»")){
             myWizardBot.sendPhoto(chatId,"", "static/images/pizza_cheesy.jpg");
@@ -159,7 +177,36 @@ public class PizzaMenuHandler implements InputMessageHandler {
         }
         return replyToUser;
     }
-        private InlineKeyboardMarkup getInlineMessageButtonsForwardBack() {
+
+    private void addBasket(BotState botState, Message inputMsg){
+        String usersAnswer = inputMsg.getText();
+        int userId = inputMsg.getFrom().getId();
+        long chatId = inputMsg.getChatId();
+
+
+        UserProfileData profileData = userDataCache.getUserProfileData(userId);
+        if (profileDataService.getUserProfileData(chatId)!=null){
+            profileData = profileDataService.getUserProfileData(chatId);
+            if (profileData.getUserBasket().get(botState)==null){
+                profileData.getUserBasket().put(botState, Integer.valueOf(usersAnswer));
+            }else {
+                profileData.getUserBasket().put(botState, Integer.parseInt(usersAnswer)+
+                        profileData.getUserBasket().get(botState));
+            }
+            profileDataService.deleteUsersProfileDataChatId(chatId);
+
+        }else {
+            Map<BotState,Integer> userMap = new TreeMap<>();
+            userMap.put(botState, Integer.valueOf(usersAnswer));
+            profileData.setUserBasket(userMap);
+        }
+        profileData.setChatId(chatId);
+        profileDataService.saveUserProfileData(profileData);
+        System.out.println(Integer.parseInt(usersAnswer)+" "+
+                profileData.getUserBasket().get(botState));
+    }
+
+    private InlineKeyboardMarkup getInlineMessageButtonsForwardBack() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
         InlineKeyboardButton buttonBack = new InlineKeyboardButton().setText("«Назад");
@@ -167,8 +214,8 @@ public class PizzaMenuHandler implements InputMessageHandler {
 
 
         //Every button must have callBackData, or else not work !
-            buttonBack.setCallbackData("buttonBack");
-            buttonForwar.setCallbackData("buttonForwar");
+        buttonBack.setCallbackData("buttonBack");
+        buttonForwar.setCallbackData("buttonForwar");
 
 
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
