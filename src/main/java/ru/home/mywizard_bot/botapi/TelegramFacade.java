@@ -1,5 +1,6 @@
 package ru.home.mywizard_bot.botapi;
 
+import com.vdurmont.emoji.EmojiParser;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -23,6 +24,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Stack;
+
+import static com.vdurmont.emoji.EmojiParser.parseToUnicode;
 
 /**
  * @author Sergei Viacheslaev
@@ -73,15 +77,22 @@ public class TelegramFacade {
         long chatId = message.getChatId();
         BotState botState;
         SendMessage replyMessage;
+        Stack<BotState> botStateReturnStack = userDataCache.getUsersCurrentBotStateStack(userId);
+
+
+
 
         switch (inputMsg) {
             case "/start":
                 botState = BotState.START_MENU;
-//                userDataCache.setUsersCurrentBotState(userId, botState);
-//                return mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN));
+                userDataCache.setUsersCurrentBotState(userId, botState);
+                return mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN));
 
 //                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN), "static/images/wizard_logo.jpg");
 //                myWizardBot.sendPhoto(chatId, messagesService.getReplyText("reply.hello"), "/app/src/main/resources/static/images/wizard_logo.jpg");
+//                break;
+            case "Главное Меню\u2B06":
+                botState = BotState.START_MENU;
                 break;
             case "Пицца\uD83C\uDF55":
                 botState = BotState.PIZZA;
@@ -99,11 +110,41 @@ public class TelegramFacade {
             case "О нас\uD83C\uDFEE":
                 botState = BotState.ABOUT;
                 break;
+            case"\u2B05Назад":
+                botState = botStateReturnStack.pop();
+                System.out.println("start "+botStateReturnStack);
+                if (botStateReturnStack.empty()) {
+            }else {
+                    System.out.println("start "+botStateReturnStack);
+//                если статус из стека равен текущему, то берем следующий статус из стека.
+//                findMessageHandler2 - приравнивает внутренние статусы к основному
+                    if(botStateContext.findMessageHandler2(userDataCache.getUsersCurrentBotState(userId)).
+                            equals(botState)){
+                        botState = botStateReturnStack.pop();
+                    }
+                }
+
+
+                System.out.println("vziali "+ botState);
+                System.out.println("finish "+botStateReturnStack);
+                break;
             default:
                 botState = userDataCache.getUsersCurrentBotState(userId);
                 break;
         }
 
+        if (botState==BotState.START_MENU){
+            botStateReturnStack.clear();
+            botStateReturnStack.push(botState);
+        }
+//        если жмем назад или статус равен последнему в стеке, то статус в стек не записываем
+        if(inputMsg.equals("Назад\u2B05") || botStateContext.findMessageHandler2(botState)==
+                botStateReturnStack.peek()){ }else {
+            botStateReturnStack.push(botStateContext.findMessageHandler2(botState));
+        }
+
+
+        userDataCache.setUsersCurrentBotStateStack(userId,botStateReturnStack);
 
         userDataCache.setUsersCurrentBotState(userId, botState);
 

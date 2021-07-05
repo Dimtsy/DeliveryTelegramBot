@@ -55,32 +55,32 @@ public class StartMenuHandler implements InputMessageHandler {
         UserProfileData profileData = userDataCache.getUserProfileData(userId);
         BotState botState = userDataCache.getUsersCurrentBotState(userId);
 
-        SendMessage replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN));;
+        SendMessage replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.chooseMenu", Emojis.CHOOSEMENU));
         if (botState.equals(BotState.START_MENU)){
-            replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.hello", Emojis.POINTDOWN));
+            replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.chooseMenu", Emojis.CHOOSEMENU));
             userDataCache.setUsersCurrentBotState(userId, BotState.START_MENU_ACT);
 
         }
-//        if (usersAnswer.equals(messagesService.getReplyText("reply.pizza", Emojis.PIZZA))){
-//            replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, "Выберите блюдо");
+////        if (usersAnswer.equals(messagesService.getReplyText("reply.pizza", Emojis.PIZZA))){
+////            replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, "Выберите блюдо");
+////            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
+////        }
+//        if (usersAnswer.equals(messagesService.getReplyText("reply.sushi", Emojis.SUSHI))){
+//            replyToUser = mainMenuService.getMainMenuMessageSushi(chatId, "Выберите блюдо");
+//            userDataCache.setUsersCurrentBotState(userId, BotState.SUSHI);
+//        }
+////        if (usersAnswer.equals(messagesService.getReplyText("reply.basket", Emojis.BASKET))){
+////            replyToUser = mainMenuService.getMainMenuMessageBasket(chatId);
+////            userDataCache.setUsersCurrentBotState(userId, BotState.BASKET_ACT);
+////        }
+//        if (usersAnswer.equals(messagesService.getReplyText("reply.checkout", Emojis.CHECKOUT))){
+//            replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.pizza", Emojis.PIZZA));
 //            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
 //        }
-        if (usersAnswer.equals(messagesService.getReplyText("reply.sushi", Emojis.SUSHI))){
-            replyToUser = mainMenuService.getMainMenuMessageSushi(chatId, "Выберите блюдо");
-            userDataCache.setUsersCurrentBotState(userId, BotState.SUSHI);
-        }
-//        if (usersAnswer.equals(messagesService.getReplyText("reply.basket", Emojis.BASKET))){
-//            replyToUser = mainMenuService.getMainMenuMessageBasket(chatId);
-//            userDataCache.setUsersCurrentBotState(userId, BotState.BASKET_ACT);
+//        if (usersAnswer.equals(messagesService.getReplyText("reply.about", Emojis.ABOUT))){
+//            replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.pizza", Emojis.PIZZA));
+//            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
 //        }
-        if (usersAnswer.equals(messagesService.getReplyText("reply.checkout", Emojis.CHECKOUT))){
-            replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.pizza", Emojis.PIZZA));
-            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
-        }
-        if (usersAnswer.equals(messagesService.getReplyText("reply.about", Emojis.ABOUT))){
-            replyToUser = mainMenuService.getMainMenuMessage(chatId, messagesService.getReplyText("reply.pizza", Emojis.PIZZA));
-            userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA);
-        }
 
         return replyToUser;
     }

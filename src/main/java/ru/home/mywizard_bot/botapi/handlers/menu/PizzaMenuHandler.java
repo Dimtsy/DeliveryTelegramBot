@@ -50,7 +50,7 @@ public class PizzaMenuHandler implements InputMessageHandler {
     }
     @Override
     public BotApiMethod<?> processCallbackQueryHandler(CallbackQuery buttonQuery) {
-        return processUsersInputCallback(buttonQuery);
+        return null;
     }
     @Override
     public SendMessage handle(Message message) {
@@ -62,68 +62,7 @@ public class PizzaMenuHandler implements InputMessageHandler {
         return BotState.PIZZA;
     }
 
-    private BotApiMethod<?> processUsersInputCallback(CallbackQuery buttonQuery){
 
-        final int messId = buttonQuery.getMessage().getMessageId();
-        final long chatId = buttonQuery.getMessage().getChatId();
-        final int userId = buttonQuery.getFrom().getId();
-        final String inlineMessId = buttonQuery.getInlineMessageId();
-
-        BotState botState = userDataCache.getUsersCurrentBotState(userId);
-
-        BotApiMethod<?> callBackAnswer = null;
-
-
-
-        if (botState.equals(BotState.PIZZA_CHEESY)){
-            if (buttonQuery.getData().equals("buttonBack")){
-                callBackAnswer = editMessageText(String.format("<b>Большая</b>%nТесто, соус сырный, сыр мраморный, " +
-                        "сыр сливочный, творог + коробка.%nВес: 920 гр.%n Цена: 17р."),buttonQuery);
-                myWizardBot.sendRemoveClock(buttonQuery);
-                userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA_CHEESY3);
-            }
-
-            if (buttonQuery.getData().equals("buttonForwar")){
-                callBackAnswer = editMessageText(String.format("<b>Средняя</b>%nТесто, соус сырный, сыр мраморный, " +
-                        "сыр сливочный, творог + коробка.%nВес: 600 гр.%n Цена: 13р."),buttonQuery);
-                myWizardBot.sendRemoveClock(buttonQuery);
-                userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA_CHEESY2);
-            }
-        }
-
-        if (botState.equals(BotState.PIZZA_CHEESY2)){
-            if (buttonQuery.getData().equals("buttonBack")){
-                callBackAnswer = editMessageText(String.format("<b>Маленькая</b>%nТесто, соус сырный, сыр мраморный, " +
-                        "сыр сливочный, творог + коробка.%nВес: 360 гр.%n Цена: 8р."),buttonQuery);
-                myWizardBot.sendRemoveClock(buttonQuery);
-                userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA_CHEESY);
-            }
-
-            if (buttonQuery.getData().equals("buttonForwar")){
-                callBackAnswer = editMessageText(String.format("<b>Большая</b>%nТесто, соус сырный, сыр мраморный, " +
-                        "сыр сливочный, творог + коробка.%nВес: 920 гр.%n Цена: 17р."),buttonQuery);
-                myWizardBot.sendRemoveClock(buttonQuery);
-                userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA_CHEESY3);
-            }
-        }
-        if (botState.equals(BotState.PIZZA_CHEESY3)){
-            if (buttonQuery.getData().equals("buttonBack")){
-                callBackAnswer = editMessageText(String.format("<b>Средняя</b>%nТесто, соус сырный, сыр мраморный, " +
-                        "сыр сливочный, творог + коробка.%nВес: 600 гр.%n Цена: 13р."),buttonQuery);
-                myWizardBot.sendRemoveClock(buttonQuery);
-                userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA_CHEESY2);
-            }
-
-            if (buttonQuery.getData().equals("buttonForwar")){
-                callBackAnswer = editMessageText(String.format("<b>Маленькая</b>%nТесто, соус сырный, сыр мраморный, " +
-                        "сыр сливочный, творог + коробка.%nВес: 360 гр.%n Цена: 8р."),buttonQuery);
-                myWizardBot.sendRemoveClock(buttonQuery);
-                userDataCache.setUsersCurrentBotState(userId, BotState.PIZZA_CHEESY);
-            }
-        }
-
-        return callBackAnswer;
-    }
     private SendMessage processUsersInput(Message inputMsg) {
         String usersAnswer = inputMsg.getText();
         int userId = inputMsg.getFrom().getId();
@@ -139,27 +78,7 @@ public class PizzaMenuHandler implements InputMessageHandler {
             replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, "Выберите блюдо");
         }
 
-        if (usersAnswer.matches(regex)){
 
-            if (botState.equals(BotState.PIZZA_CHEESY)) {
-                System.out.println("PIZZA_CHEESY");
-                myWizardBot.sendMessageExecute(mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?")));
-//                replyToUser = mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?"));
-                addBasket(BotState.PIZZA_CHEESY,inputMsg);
-            }
-
-            if (botState.equals(BotState.PIZZA_CHEESY2)) {
-                System.out.println("PIZZA_CHEESY2");
-                myWizardBot.sendMessageExecute(mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?")));
-                addBasket(BotState.PIZZA_CHEESY2, inputMsg);
-            }
-            if (botState.equals(BotState.PIZZA_CHEESY3)) {
-                System.out.println("PIZZA_CHEESY3");
-                myWizardBot.sendMessageExecute(mainMenuService.getMainMenuMessagePizza(chatId, String.format("Добавлено в корзину%nХотите что-то еще?")));
-                addBasket(BotState.PIZZA_CHEESY3, inputMsg);
-            }
-            replyToUser =null;
-        }
         if (usersAnswer.equals("Пицца «Сырная»")){
             myWizardBot.sendPhoto(chatId,"", "static/images/pizza_cheesy.jpg");
 
@@ -178,33 +97,6 @@ public class PizzaMenuHandler implements InputMessageHandler {
         return replyToUser;
     }
 
-    private void addBasket(BotState botState, Message inputMsg){
-        String usersAnswer = inputMsg.getText();
-        int userId = inputMsg.getFrom().getId();
-        long chatId = inputMsg.getChatId();
-
-
-        UserProfileData profileData = userDataCache.getUserProfileData(userId);
-        if (profileDataService.getUserProfileData(chatId)!=null){
-            profileData = profileDataService.getUserProfileData(chatId);
-            if (profileData.getUserBasket().get(botState)==null){
-                profileData.getUserBasket().put(botState, Integer.valueOf(usersAnswer));
-            }else {
-                profileData.getUserBasket().put(botState, Integer.parseInt(usersAnswer)+
-                        profileData.getUserBasket().get(botState));
-            }
-            profileDataService.deleteUsersProfileDataChatId(chatId);
-
-        }else {
-            Map<BotState,Integer> userMap = new TreeMap<>();
-            userMap.put(botState, Integer.valueOf(usersAnswer));
-            profileData.setUserBasket(userMap);
-        }
-        profileData.setChatId(chatId);
-        profileDataService.saveUserProfileData(profileData);
-        System.out.println(Integer.parseInt(usersAnswer)+" "+
-                profileData.getUserBasket().get(botState));
-    }
 
     private InlineKeyboardMarkup getInlineMessageButtonsForwardBack() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -231,18 +123,5 @@ public class PizzaMenuHandler implements InputMessageHandler {
 
         return inlineKeyboardMarkup;
     }
-    private EditMessageText editMessageText(String description,CallbackQuery buttonQuery){
-        final int messId = buttonQuery.getMessage().getMessageId();
-        final long chatId = buttonQuery.getMessage().getChatId();
-        final String inlineMessId = buttonQuery.getInlineMessageId();
 
-        EditMessageText editMessageText = new EditMessageText();
-        editMessageText.setMessageId(messId);
-        editMessageText.setChatId(chatId);
-        editMessageText.setInlineMessageId(inlineMessId);
-        editMessageText.setText(description);
-        editMessageText.setReplyMarkup(getInlineMessageButtonsForwardBack());
-        editMessageText.setParseMode("HTML");
-        return editMessageText;
-    }
 }

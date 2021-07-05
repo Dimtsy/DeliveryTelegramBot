@@ -18,12 +18,13 @@ public enum Emojis {
     ABOUT(EmojiParser.parseToUnicode(":izakaya_lantern:")),
     POINTDOWN(EmojiParser.parseToUnicode(":point_down:")),
     ARROWSCOUNT(EmojiParser.parseToUnicode(":arrows_counterclockwise:")),
-    X(EmojiParser.parseToUnicode(":x:"));
+    X(EmojiParser.parseToUnicode(":x:")),
+    CHOOSEMENU(EmojiParser.parseToUnicode(":point_down:"));
 
     private String emojiName;
 
     @Override
     public String toString() {
-        return emojiName;
+        return String.format(emojiName);
     }
 }

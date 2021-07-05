@@ -16,6 +16,7 @@ import ru.home.mywizard_bot.service.ReplyMessagesService;
 import ru.home.mywizard_bot.service.UsersProfileDataService;
 import ru.home.mywizard_bot.utils.Emojis;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,7 +31,7 @@ public class BasketMenuHandler implements InputMessageHandler {
     private String messageBasketReply;
 
     public BasketMenuHandler(@Lazy MyWizardTelegramBot myWizardBot,ReplyMessagesService messagesService,
-            UserDataCache userDataCache, MainMenuService mainMenuService,UsersProfileDataService profileDataService) {
+                             UserDataCache userDataCache, MainMenuService mainMenuService,UsersProfileDataService profileDataService) {
         this.mainMenuService = mainMenuService;
         this.profileDataService = profileDataService;
         this.myWizardBot = myWizardBot;
@@ -54,6 +55,7 @@ public class BasketMenuHandler implements InputMessageHandler {
     }
 
     private SendMessage processUsersInput(Message inputMsg){
+
         String usersAnswer = inputMsg.getText();
 
         int userId = inputMsg.getFrom().getId();
@@ -63,46 +65,52 @@ public class BasketMenuHandler implements InputMessageHandler {
         SendMessage replyToUser;
 
         UserProfileData profileData = profileDataService.getUserProfileData(chatId);
-        Map<BotState,Integer> productMap =profileData.getUserBasket();
+        Map<BotState,Integer> productMap =new HashMap<>(profileData.getUserBasket());
         BotState botState = userDataCache.getUsersCurrentBotState(userId);
 
+
         switch (usersAnswer){
-            case"Назад⬅️":
+            case"Очистить\uD83D\uDD04":
+                productMap.clear();
+                profileDataService.deleteUsersProfileDataChatId(chatId);
+                profileData.setUserBasket(productMap);
+                profileDataService.saveUserProfileData(profileData);
 
                 break;
-            case"Очистить\uD83D\uDD04":
-                profileData.getUserBasket().forEach((t,v)->{
-                    if(messagesService.getReplyText(getReplyTextBasket(t), Emojis.X).equals(usersAnswer)){
-                        profileDataService.deleteUsersProfileData(profileData.getId());
-                    }
-                });
-                break;
+
             case"Оформить заказ\uD83D\uDE96":
 
                 break;
             default:
-                AtomicReference<BotState> stat=new AtomicReference<>();
-//                profileData.getUserBasket().entrySet().remove()
-//                profileData.getUserBasket().entrySet().removeIf(entry -> "Sample".equalsIgnoreCase(entry.getKey()));
-                productMap.forEach((t,v)->{
-                    System.out.println("зашел1");
+                profileData.getUserBasket().forEach((t,v)->{
                     if(messagesService.getReplyText(getReplyTextBasket(t), Emojis.X).equals(usersAnswer)){
-                        stat.set(t);
-                        System.out.println("зашел2 " +t+stat);
+
+                        productMap.remove(t);
+                        profileDataService.deleteUsersProfileDataChatId(chatId);
+                    profileData.setUserBasket(productMap);
+                    profileDataService.saveUserProfileData(profileData);
+
                     }
                 });
-                productMap.remove(stat);
-                System.out.println(productMap);
+//                if (statMapProduct==null){
+//
+//                }else {
+//                    productMap.remove(statMapProduct);
+//                    profileDataService.deleteUsersProfileDataChatId(chatId);
+//                    profileData.setUserBasket(productMap);
+//                    profileDataService.saveUserProfileData(profileData);
+//                    statMapProduct=null;
+//                }
+                break;
+
+
         }
 
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chatId);
-            sendMessage.setText(String.format(messagesService.getReplyText("reply.basketMemo",
-                    Emojis.X,Emojis.ARROWSCOUNT)));
-            myWizardBot.sendMessageExecute(sendMessage);
 
+
+        if(!productMap.isEmpty()){
             messageBasketReply = String.format(" Корзина:%n%n");
-        productMap.forEach((t,v)->{
+            productMap.forEach((t,v)->{
                 messageBasketReply = messageBasketReply.concat(String.format("%s%n %s X %s = %s%n",
                         messagesService.getReplyText(getReplyTextBasket(t),""),v,getReplyPriceBasket(t),
                         getReplyPriceBasket(t)*v));
@@ -110,10 +118,20 @@ public class BasketMenuHandler implements InputMessageHandler {
             });
             messageBasketReply = messageBasketReply.concat(String.format("%n Итого: %s р.",sum));
 
-            replyToUser = mainMenuService.getMainMenuMessageBasket(chatId,messageBasketReply,profileData.getUserBasket());
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText(String.format(messagesService.getReplyText("reply.basketMemo",
+                    Emojis.X,Emojis.ARROWSCOUNT)));
+            myWizardBot.sendMessageExecute(sendMessage);
+        }else {
+            messageBasketReply = String.format("Ваша корзина пуста, выберите что-нибудь для заказа");
+        }
 
 
-            userDataCache.setUsersCurrentBotState(userId, BotState.BASKET_ACT);
+        replyToUser = mainMenuService.getMainMenuMessageBasket(chatId,messageBasketReply,profileData.getUserBasket());
+
+
+        userDataCache.setUsersCurrentBotState(userId, BotState.BASKET_ACT);
 
 
 

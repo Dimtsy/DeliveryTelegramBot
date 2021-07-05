@@ -208,9 +208,8 @@ public class MainMenuService {
         replyKeyboardMarkup.setKeyboard(keyboard);
         return replyKeyboardMarkup;
     }
-    private ReplyKeyboardMarkup getMainMenuKeyboardBasket(final long chatId,Map<BotState,Integer> map) {
-        AtomicInteger sum = new AtomicInteger();
 
+    private ReplyKeyboardMarkup getMainMenuKeyboardBasket(final long chatId,Map<BotState,Integer> map) {
 
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(true);
@@ -218,10 +217,6 @@ public class MainMenuService {
         replyKeyboardMarkup.setOneTimeKeyboard(false);
 
         List<KeyboardRow> keyboard = new ArrayList<>();
-//-----------
-//        UserProfileData profileData = profileDataService.getUserProfileData(chatId);
-
-
 
         KeyboardRow row1 = new KeyboardRow();
         row1.add(new KeyboardButton(messagesService.getReplyText("reply.back", Emojis.BACK)));
@@ -229,24 +224,11 @@ public class MainMenuService {
                 Emojis.ARROWSCOUNT)));
         keyboard.add(row1);
 
-        messageBasketReply = String.format(" Корзина:%n%n");
         map.forEach((t,v)->{
             KeyboardRow row = new KeyboardRow();
             row.add(new KeyboardButton(messagesService.getReplyText(getReplyTextBasket(t), Emojis.X)));
             keyboard.add(row);
-            messageBasketReply = messageBasketReply.concat(String.format("%s%n %s X %s = %s%n",
-                    messagesService.getReplyText(getReplyTextBasket(t),""),v,getReplyPriceBasket(t),
-                    getReplyPriceBasket(t)*v));
-            sum.set(sum.get() + getReplyPriceBasket(t) * v);
         });
-        messageBasketReply = messageBasketReply.concat(String.format("%n Итого: %s р.",sum));
-
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(chatId);
-//        sendMessage.setText(String.format(messagesService.getReplyText("reply.basketMemo",
-//                Emojis.X,Emojis.ARROWSCOUNT)));
-//        myWizardBot.sendMessageExecute(sendMessage);
-
 
         KeyboardRow row2 = new KeyboardRow();
         row2.add(new KeyboardButton((messagesService.getReplyText("reply.checkout",
@@ -256,6 +238,7 @@ public class MainMenuService {
         replyKeyboardMarkup.setKeyboard(keyboard);
         return replyKeyboardMarkup;
     }
+
     private String getReplyTextBasket(BotState botState){
         String replyText= null;
         switch (botState) {

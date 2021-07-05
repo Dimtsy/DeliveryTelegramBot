@@ -6,6 +6,7 @@ import ru.home.mywizard_bot.model.UserProfileData;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * In-memory cache.
@@ -17,6 +18,22 @@ import java.util.Map;
 public class UserDataCache implements DataCache {
     private Map<Integer, BotState> usersBotStates = new HashMap<>();
     private Map<Integer, UserProfileData> usersProfileData = new HashMap<>();
+    private Map<Integer, Stack<BotState>> usersBotStatesStack = new HashMap<>();
+
+    @Override
+    public void setUsersCurrentBotStateStack(int userId, Stack<BotState> botStateStack) {
+        usersBotStatesStack.put(userId, botStateStack);
+    }
+
+    @Override
+    public Stack<BotState> getUsersCurrentBotStateStack(int userId) {
+        Stack<BotState> botStateStack = usersBotStatesStack.get(userId);
+        if (botStateStack == null) {
+            botStateStack = new Stack<>();
+            botStateStack.push(BotState.START_MENU);
+        }
+        return botStateStack;
+    }
 
     @Override
     public void setUsersCurrentBotState(int userId, BotState botState) {

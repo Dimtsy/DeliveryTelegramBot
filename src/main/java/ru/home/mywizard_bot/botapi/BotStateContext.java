@@ -44,9 +44,30 @@ public class BotStateContext {
         if (isFillingProfileStateBasket(currentState)) {
             return messageHandlers.get(BotState.BASKET);
         }
+        if (isFillingProfileStatePizzaCheesy(currentState)) {
+            return messageHandlers.get(BotState.PIZZA_CHEESY);
+        }
 //Если не подходит не один из статусов то остается назначенный статус в ТелеграмФасаде
 // в данном случае это ASK_DESTINY и сработает обработчик из AskDestinyHandler
         return messageHandlers.get(currentState);
+    }
+
+    public BotState findMessageHandler2(BotState currentState) {
+        if (isFillingProfileStateStartMenu(currentState)) {
+            return BotState.START_MENU;
+        }
+        if (isFillingProfileStatePizza(currentState)) {
+            return BotState.PIZZA;
+        }
+        if (isFillingProfileStateBasket(currentState)) {
+            return BotState.BASKET;
+        }
+        if (isFillingProfileStatePizzaCheesy(currentState)) {
+            return BotState.PIZZA_CHEESY;
+        }
+//Если не подходит не один из статусов то остается назначенный статус в ТелеграмФасаде
+// в данном случае это ASK_DESTINY и сработает обработчик из AskDestinyHandler
+        return currentState;
     }
 
     private boolean isFillingProfileStateStartMenu(BotState currentState) {
@@ -58,31 +79,40 @@ public class BotStateContext {
          return false;
         }
     }
-    private boolean isFillingProfileStatePizza(BotState currentState) {
+    private boolean isFillingProfileStatePizzaCheesy(BotState currentState) {
         switch (currentState) {
-            case PIZZA:
+
             case PIZZA_CHEESY:
             case PIZZA_CHEESY2:
             case PIZZA_CHEESY3:
-            case ABOUT:
-            case CHECKOUT:
                 return true;
             default:
                 return false;
         }
     }
-
-    private boolean isFillingProfileStateBasket(BotState currentState) {
-        switch (currentState) {
-            case BASKET:
-            case BASKET_ACT:
-                return true;
-            default:
-                return false;
+        private boolean isFillingProfileStatePizza (BotState currentState){
+            switch (currentState) {
+                case PIZZA:
+                case SUSHI:
+                case ABOUT:
+                case CHECKOUT:
+                    return true;
+                default:
+                    return false;
+            }
         }
-    }
 
-}
+        private boolean isFillingProfileStateBasket (BotState currentState){
+            switch (currentState) {
+                case BASKET:
+                case BASKET_ACT:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+    }
 
 
 
